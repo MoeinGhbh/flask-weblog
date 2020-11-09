@@ -10,3 +10,5 @@ db.create_all()
 import secrets
 secrets.token_hex(16)
 
+pip install flask_bcrypt
+

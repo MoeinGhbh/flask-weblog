@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from weblog import app
 from weblog.forms import RegistrationForm, LoginForm
+from weblog.models import User
+from weblog import db, bcrypt
 
 
 @app.route('/')
@@ -11,6 +13,12 @@ def home():
 @app.route('/registration', methods=['get', 'post'])
 def registration():
     reg_form = RegistrationForm()
+    if reg_form.validate_on_submit():
+        hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
+        new_user = User(username=reg_form.username.data, email=reg_form.email.data, password=hashed_pass)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('home'))
     return render_template('registration.html', form=reg_form)
 
 
