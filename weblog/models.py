@@ -21,5 +21,5 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __await__(self):
+    def __repr__(self):
         return f'{self.__class__.__name__}({self.title[:30]},{self.content},{self.date})'
