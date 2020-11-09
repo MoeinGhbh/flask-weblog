@@ -10,7 +10,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/registration', methods=['get', 'post'])
+@app.route('/register', methods=['GET', 'POST'])
 def registration():
     reg_form = RegistrationForm()
     if reg_form.validate_on_submit():
@@ -19,10 +19,12 @@ def registration():
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('home'))
+    else:
+        print('not valid')
     return render_template('registration.html', form=reg_form)
 
 
-@app.route('/login', methods=['get', 'post'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()
     return render_template('login.html', form=login_form)
