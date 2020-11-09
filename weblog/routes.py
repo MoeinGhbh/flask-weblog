@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from weblog import app
 from weblog.forms import RegistrationForm, LoginForm
 from weblog.models import User
@@ -18,6 +18,7 @@ def registration():
         new_user = User(username=reg_form.username.data, email=reg_form.email.data, password=hashed_pass)
         db.session.add(new_user)
         db.session.commit()
+        flash('You register successfully.', 'success')
         return redirect(url_for('home'))
     else:
         print('not valid')

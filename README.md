@@ -12,3 +12,5 @@ secrets.token_hex(16)
 
 pip install flask_bcrypt
 
+#######pip install flask_flash
+

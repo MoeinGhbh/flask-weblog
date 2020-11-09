@@ -6,7 +6,11 @@
     <title>login gorm</title>
 </head>
 <body>
+
+    {% include 'include/navbar.html' %}
+
     <div class="jumbotron">
+            {% include 'include/messages.html'%}
             {% block content %}
             {% endblock %}
     </div>
