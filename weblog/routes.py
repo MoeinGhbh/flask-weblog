@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request
-
-app = Flask(__name__)
+from weblog import app
 
 @app.route('/')
 def index():
-    return 'welcome to login'
+    return render_template('home.html')
 
