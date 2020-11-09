@@ -19,7 +19,7 @@ class Post(db.Model):
     title = db.Column(db.String(25), nullable=False)
     date = db.Column(db.String(10), default=datetime.datetime.now)
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeingKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __await__(self):
         return f'{self.__class__.__name__}({self.title[:30]},{self.content},{self.date})'
