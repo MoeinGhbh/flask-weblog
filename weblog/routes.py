@@ -3,6 +3,7 @@ from weblog import app
 from weblog.forms import RegistrationForm, LoginForm
 from weblog.models import User
 from weblog import db, bcrypt
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 @app.route('/')
@@ -27,5 +28,25 @@ def registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = User.query.filter_by(email=login_form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, login_form.password.data):
+            login_user(user, remember=login_form.remember.data)
+            # next_page = request.args.get('next')
+            flash('You login successfully', 'success')
+            return redirect(url_for('home'))
+            # return redirect(next_page if next_page else url_for('home'))
+        else:
+            flash('Email or Password is wrong', 'danger')
     return render_template('login.html', form=login_form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash('you logged out successfully', 'success')
+    return redirect(url_for('home'))
