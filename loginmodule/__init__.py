@@ -5,7 +5,7 @@ from flask_login import LoginManager
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a2a58d01c94d129e7407823e6faf1ace'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../weblog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../LoginModule.db'
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -14,4 +14,4 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please login as first step'
 login_manager.login_message_category = 'info'
 
-from weblog import routes
+from loginmodule import routes

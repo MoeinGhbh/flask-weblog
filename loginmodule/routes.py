@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from weblog import app
-from weblog.forms import RegistrationForm, LoginForm
-from weblog.models import User
-from weblog import db, bcrypt
+from loginmodule import app
+from loginmodule.forms import RegistrationForm, LoginForm, UpdateProfile
+from loginmodule.models import User
+from loginmodule import db, bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -50,3 +50,19 @@ def logout():
     logout_user()
     flash('you logged out successfully', 'success')
     return redirect(url_for('home'))
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    upfrm = UpdateProfile()
+    if upfrm.validate_on_submit():
+        current_user.email = upfrm.email.data
+        current_user.username = upfrm.username.data
+        db.session.commit()
+        flash('your account update successfully', 'info')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        upfrm.email.data = current_user.email
+        upfrm.username.data = current_user.username
+    return render_template('profile.html', form=upfrm)

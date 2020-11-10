@@ -1,15 +1,25 @@
-FROM python:latest
+FROM python:3.8-slim-buster
 
 WORKDIR /code
 
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt 
-RUN python -m pip install --upgrade pip
-
-COPY . . 
+RUN apt-get update && apt-get install \
+  -y --no-install-recommends python3 python3-virtualenv
 
 
-EXPOSE 5050
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-CMD ["python" , "app.py"]
+RUN /opt/venv/bin/python3 -m pip install --upgrade pip
+
+# Install dependencies:
+COPY requirements.txt /code
+RUN pip install -r requirements.txt
+
+# Run the application:
+COPY . /code
+COPY loginmodule/ /opt/venv/bin/python3/
+
+RUN pip install loginmodule
+
+CMD ["python", "run.py"]
