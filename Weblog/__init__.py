@@ -14,4 +14,4 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please login as first step'
 login_manager.login_message_category = 'info'
 
-from loginmodule import routes
+from Weblog import routes

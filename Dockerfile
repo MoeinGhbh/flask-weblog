@@ -18,7 +18,7 @@ RUN pip install -r requirements.txt
 
 # Run the application:
 COPY . /code
-COPY loginmodule/ /opt/venv/bin/python3/
+COPY Weblog/ /opt/venv/bin/python3/
 
 RUN pip install loginmodule
 

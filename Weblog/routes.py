@@ -1,14 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from loginmodule import app
-from loginmodule.forms import RegistrationForm, LoginForm, UpdateProfile
-from loginmodule.models import User
-from loginmodule import db, bcrypt
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from Weblog import app
+from Weblog.forms import RegistrationForm, LoginForm, UpdateProfile, PostForm
+from Weblog.models import User, Post
+from Weblog import db, bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html')
+    posts = Post.query.all()
+    print(posts)
+    return render_template('home.html', form=posts)
+
+
+@app.route('/post/<int:post_id>')
+def detail(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('detail.html', det_post=post)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -66,3 +74,48 @@ def profile():
         upfrm.email.data = current_user.email
         upfrm.username.data = current_user.username
     return render_template('profile.html', form=upfrm)
+
+
+@app.route('/post/new', methods=['GET', 'POST'])
+@login_required
+def newpost():
+    post_form = PostForm()
+    if post_form.validate_on_submit():
+        post = Post(title=post_form.title.data, content=post_form.content.data, user=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('New post updated successfully', 'info')
+        return redirect(url_for('home'))
+    return render_template('post.html', form=post_form)
+
+
+@app.route('/post/<int:post_id>/delete')
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.user != current_user:
+        abort(403)
+    else:
+        db.session.delete(post)
+        db.session.commit()
+        flash('Post deleted successfully', 'info')
+        return redirect(url_for('home'))
+
+
+@app.route('/post/<int:post_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if current_user != post.user:
+        abort(403)
+    upform = PostForm()
+    if upform.validate_on_submit():
+        post.title = upform.title.data
+        post.content = upform.content.data
+        db.session.commit()
+        flash('Post successfully updated', 'info')
+        return redirect(url_for('detail', post_id=post.id))
+    elif request.method == 'GET':
+        upform.title.data = post.title
+        upform.content.data = post.content
+        return render_template('update.html', form=upform)
